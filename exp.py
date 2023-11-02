@@ -57,9 +57,10 @@ for ts in test_sizes:
         model = train_model(X_train, y_train, {'gamma': cur_hparam[0], 'C' : cur_hparam[1]}, model_type='svm')
 
         # Get the test accuracy 
-        accuracy = predict_and_eval(model, X_test, y_test)
+        train_accuracy = predict_and_eval(model, X_train, y_train)
+        test_accuracy = predict_and_eval(model, X_test, y_test)
 
         print(f"Train Size : {1 - (ts+ds)} Test Size : {ts} Dev Size : {ds}")
-        print(f"Train Accuracy : {cur_accur_sofar:.02f} Dev Accuracy : {cur_accur_sofar:.02f} Test Accuracy : {accuracy:.02f}") 
+        print(f"Train Accuracy : {train_accuracy:.02f} Dev Accuracy : {cur_accur_sofar:.02f} Test Accuracy : {test_accuracy:.02f}") 
         print(f"Optimal Gamma : {cur_hparam[0]} Optimal C : {cur_hparam[1]}")
         print("\n")
