@@ -78,7 +78,7 @@ def hparams_tune(X_train, X_dev, y_train, y_dev, params):
         if cur_accuracy > best_accur_sofar:
             best_accur_sofar = cur_accuracy
             best_hparam = gc  
-            best_model_path = "./models/best_model_".join(["{}:{}".format(gc[0], gc[1])]) + ".joblib"
+            best_model_path = "./models/best_model_{}-{}.joblib".format(best_hparam[0], best_hparam[1])
             best_model = cur_model
 
     # Save the best model
