@@ -18,6 +18,7 @@ from sklearn.model_selection import train_test_split
 # Importing required functions from utils.py
 from utils import preprocess_data, split_data, read_data, train_model, predict_and_eval, hparams_tune
 import pdb
+from joblib import load 
 
 
 # _, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
@@ -55,8 +56,9 @@ for ts in test_sizes:
         cur_hparam, cur_model_path, cur_accur_sofar = hparams_tune(X_train, X_dev, y_train, y_dev, p_comb)
 
         # Get the test accuracy 
-        train_accuracy = predict_and_eval(cur_model_path, X_train, y_train)
-        test_accuracy = predict_and_eval(cur_model_path, X_test, y_test)
+        cur_model = load(cur_model_path)
+        train_accuracy = predict_and_eval(cur_model, X_train, y_train)
+        test_accuracy = predict_and_eval(cur_model, X_test, y_test)
 
         print(f"Train Size : {1 - (ts+ds)} Test Size : {ts} Dev Size : {ds}")
         print(f"Train Accuracy : {train_accuracy:.02f} Dev Accuracy : {cur_accur_sofar:.02f} Test Accuracy : {test_accuracy:.02f}") 

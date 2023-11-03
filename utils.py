@@ -6,6 +6,7 @@ from sklearn import datasets, metrics, svm
 from sklearn.model_selection import train_test_split
 import itertools
 import pdb
+from joblib import dump, load
 
 ###############################################################################
 # Classification
@@ -66,6 +67,7 @@ def get_all_h_param_comb(gamma_list,c_list):
 
 def hparams_tune(X_train, X_dev, y_train, y_dev, params):
     best_accur_sofar = -1
+    best_model_path = ""
 
     all_comb = list(itertools.product(params['gammas'], params['cparams']))
     for gc in all_comb:
@@ -76,10 +78,11 @@ def hparams_tune(X_train, X_dev, y_train, y_dev, params):
         if cur_accuracy > best_accur_sofar:
             best_accur_sofar = cur_accuracy
             best_hparam = gc  
+            best_model_path = "./models/best_model_".join(["{}:{}".format(gc[0], gc[1])]) + ".joblib"
             best_model = cur_model
 
     # Save the best model
-    best_model_path = ""
+    dump(best_model, best_model_path) 
 
     return best_hparam, best_model_path, best_accur_sofar
 
