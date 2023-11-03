@@ -27,7 +27,7 @@ import argparse
 # parser = argparse.ArgumentParser(description='Description of your program')
 
 # # Add arguments
-# parser.add_argument('--num_runs', type=float, help='Nums of runs for model training', default=5)
+# parser.add_argument('--n_runs', type=float, help='Nums of runs for model training', default=5)
 # parser.add_argument('--test_size', type=float, help='Value for test size', default=0.2)
 # parser.add_argument('--dev_size', type=float, help='Value for dev size', default=0.2)
 # parser.add_argument('--model_type', choices=['svm', 'dtree'], type=str, help='Type of the model', default='svm')
@@ -36,17 +36,16 @@ import argparse
 # args = parser.parse_args()
 
 # # Access the values of the arguments
-# num_runs = args.num_runs
+# n_runs = args.n_runs
 # test_size = args.test_size
 # dev_size = args.dev_size
 # model_type = args.model_type
-
 
 # Load the data
 # 1
 X, y = read_data()
 
-num_runs = 5
+n_runs = 5
 test_size = 0.2
 dev_size = 0.2
 # Hyperparameters Combination
