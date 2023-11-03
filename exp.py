@@ -52,13 +52,11 @@ for ts in test_sizes:
         X_dev = preprocess_data(X_dev)
         y_dev = preprocess_data(y_dev)
 
-        cur_hparam, cur_model, cur_accur_sofar = hparams_tune(X_train, X_dev, y_train, y_dev, p_comb)
-
-        model = train_model(X_train, y_train, {'gamma': cur_hparam[0], 'C' : cur_hparam[1]}, model_type='svm')
+        cur_hparam, cur_model_path, cur_accur_sofar = hparams_tune(X_train, X_dev, y_train, y_dev, p_comb)
 
         # Get the test accuracy 
-        train_accuracy = predict_and_eval(model, X_train, y_train)
-        test_accuracy = predict_and_eval(model, X_test, y_test)
+        train_accuracy = predict_and_eval(cur_model_path, X_train, y_train)
+        test_accuracy = predict_and_eval(cur_model_path, X_test, y_test)
 
         print(f"Train Size : {1 - (ts+ds)} Test Size : {ts} Dev Size : {ds}")
         print(f"Train Accuracy : {train_accuracy:.02f} Dev Accuracy : {cur_accur_sofar:.02f} Test Accuracy : {test_accuracy:.02f}") 

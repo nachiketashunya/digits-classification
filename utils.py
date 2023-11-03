@@ -78,7 +78,10 @@ def hparams_tune(X_train, X_dev, y_train, y_dev, params):
             best_hparam = gc  
             best_model = cur_model
 
-    return best_hparam, best_model, best_accur_sofar
+    # Save the best model
+    best_model_path = ""
+
+    return best_hparam, best_model_path, best_accur_sofar
 
 
 def predict_and_eval(model, X_test, y_test):
