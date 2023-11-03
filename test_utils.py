@@ -1,27 +1,73 @@
-from utils import get_all_h_param_comb, read_data, split_data
+from utils import get_all_h_param_comb, read_data, split_data, preprocess_data, predict_and_eval, hparams_tune, get_hyperparam_comb
+import os
 
 def test_hparam_combinations():
-    gammas = [0.1, 0.1, 0.005, 0.123, 0.879, 0.009]
-    cparams = [1, 10, 100]
+    p_comb = hparams()
 
-    comb = get_all_h_param_comb(gammas, cparams) 
+    comb = get_all_h_param_comb(p_comb['gamma'], p_comb['C']) 
 
     expected_p1 = (0.1, 1)
 
-    assert len(comb) == len(gammas) * len(cparams)
+    assert len(comb) == len(p_comb['gamma']) * len(p_comb['C'])
     
     assert expected_p1 in comb 
 
+# Test case for data splitting
 def test_splitting_data():
-    X, y = read_data()
-
-    X = X[:100, :, :]
-    y = y[:100]
-
     test_size = 0.1
     dev_size = 0.6
     train_size = 1 - (test_size + dev_size)
+    X_train, X_dev, y_train, y_dev = get_preprocessed_data(test_size = test_size, dev_size = dev_size, train_test_split=True)
 
-    X_train, X_test, X_dev, y_train, y_test, y_dev = split_data(X, y, test_size=test_size, dev_size=dev_size)
+    assert (len(X_train) == int(train_size * 100)) and (len(X_dev) == int(dev_size * 100))
 
-    assert (len(X_train) == int(train_size * len(X))) and (len(X_test) == int(test_size * len(X))) and (len(X_dev) == int(dev_size * len(X)))
+# Function to get hparams dictionary
+def hparams():
+    gammas = [0.1, 0.1, 0.005, 0.123, 0.879, 0.009]
+    cparams = [1, 10, 100]
+
+    p_comb = {
+        'gamma' : gammas,
+        'C' : cparams
+    }
+
+    return p_comb
+
+# Function to get preprocessed data
+def get_preprocessed_data(test_size = 0.1, dev_size = 0.7, train_test_split = False):
+    X, y = read_data()
+
+    if train_test_split:
+        X = X[:100, :, :]
+        y = y[:100]
+        X_train, _, X_dev, y_train, _, y_dev = split_data(X, y, test_size=test_size, dev_size=dev_size)
+
+    else:
+        X_train = X[:100, :, :]
+        X_dev = X[:50, :, :]
+        y_train = y[:100]
+        y_dev = y[:50]
+
+    X_train = preprocess_data(X_train)  
+    X_dev = preprocess_data(X_dev)
+    y_train = preprocess_data(y_train)
+    y_dev = preprocess_data(y_dev)
+
+    return X_train, X_dev, y_train, y_dev 
+
+
+# Test save for model saving
+def test_model_saving():
+    X_train, X_dev, y_train, y_dev = get_preprocessed_data()
+    gammas = [0.1, 0.1, 0.005, 0.123, 0.879, 0.009]
+    cparams = [1, 10, 100]
+
+    p_comb_svm = {
+        'gamma' : gammas,
+        'C' : cparams
+    }
+
+    _, cur_model_path, _ = hparams_tune(X_train, X_dev, y_train, y_dev, get_hyperparam_comb(p_comb_svm), model_type="svm")
+
+    assert os.path.exists(cur_model_path)
+
