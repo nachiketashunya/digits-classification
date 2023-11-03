@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
 
 # Import datasets, classifiers and performance metrics
-from sklearn import datasets, metrics, svm
+from sklearn import datasets, metrics, svm, tree
 from sklearn.model_selection import train_test_split
 import itertools
 import pdb
@@ -53,6 +53,9 @@ def train_model(X, y, model_params, model_type="svm"):
     if model_type == "svm":
         clf = svm.SVC 
     
+    if model_type == "tree":
+        clf = tree.DecisionTreeClassifier
+    
     model = clf(**model_params) 
 
     # pdb.set_trace()
@@ -65,20 +68,33 @@ def train_model(X, y, model_params, model_type="svm"):
 def get_all_h_param_comb(gamma_list,c_list):
     return list(itertools.product(gamma_list, c_list))
 
-def hparams_tune(X_train, X_dev, y_train, y_dev, params):
+def get_combinations(param_name, param_values, base_combinations):    
+    new_combinations = []
+    for value in param_values:
+        for combination in base_combinations:
+            combination[param_name] = value
+            new_combinations.append(combination.copy())    
+    return new_combinations
+
+def get_hyperparam_comb(dict_of_param_list):
+    base_comb = [{}]
+    for p_name, p_values in dict_of_param_list.items():
+        base_comb = get_combinations(p_name, p_values, base_comb)
+    return base_comb
+
+def hparams_tune(X_train, X_dev, y_train, y_dev, params, model_type):
     best_accur_sofar = -1
     best_model_path = ""
 
-    all_comb = list(itertools.product(params['gammas'], params['cparams']))
-    for gc in all_comb:
-        cur_model = train_model(X_train, y_train, {'gamma': gc[0], 'C' : gc[1]}, model_type='svm')
+    for h_params in params:
+        cur_model = train_model(X_train, y_train, h_params, model_type=model_type)
         # Predict the value of the digit on the test subset
         cur_accuracy = predict_and_eval(cur_model, X_dev, y_dev)
 
         if cur_accuracy > best_accur_sofar:
             best_accur_sofar = cur_accuracy
-            best_hparam = gc  
-            best_model_path = "./models/best_model_{}-{}.joblib".format(best_hparam[0], best_hparam[1])
+            best_hparam = h_params  
+            best_model_path = "./models/{}_".format(model_type) +"_".join(["{}:{}".format(k,v) for k,v in h_params.items()]) + ".joblib"
             best_model = cur_model
 
     # Save the best model

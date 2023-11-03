@@ -61,7 +61,7 @@ def test_model_saving():
     X_train, X_dev, y_train, y_dev = get_preprocessed_data()
     p_comb = hparams()
 
-    _, cur_model_path, _ = hparams_tune(X_train, X_dev, y_train, y_dev, p_comb)
+    _, cur_model_path, _ = hparams_tune(X_train, X_dev, y_train, y_dev, p_comb, model_type="svm")
 
     assert os.path.exists(cur_model_path)
 
