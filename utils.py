@@ -61,7 +61,7 @@ def train_model(X, y, model_params, model_type="svm"):
 
     return model 
 
-def get_all_h_param_comb_svm(gamma_list,c_list):
+def get_all_h_param_comb(gamma_list,c_list):
     return list(itertools.product(gamma_list, c_list))
 
 def hparams_tune(X_train, X_dev, y_train, y_dev, params):
