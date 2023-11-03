@@ -39,13 +39,13 @@ def preprocess_data(data):
 
 def split_data(X, y, test_size, dev_size, random_state=1):
      # Split data into test and temporary (train + dev) sets
-    X_temp, X_test, y_temp, y_test = train_test_split(X, y, test_size=test_size, shuffle=False)
+    X_temp, X_test, y_temp, y_test = train_test_split(X, y, test_size=test_size, shuffle=True)
     
     # Calculate the ratio between dev and temp sizes
     dev_ratio = dev_size / (1 - test_size)
     
     # Split temporary data into train and dev sets
-    X_train, X_dev, y_train, y_dev = train_test_split(X_temp, y_temp, test_size=dev_ratio, shuffle=False)
+    X_train, X_dev, y_train, y_dev = train_test_split(X_temp, y_temp, test_size=dev_ratio, shuffle=True)
     
     return X_train, X_test, X_dev, y_train, y_test, y_dev
 
