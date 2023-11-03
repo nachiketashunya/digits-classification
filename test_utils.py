@@ -1,14 +1,14 @@
-from utils import get_all_h_param_comb, read_data, split_data, preprocess_data, predict_and_eval, hparams_tune
+from utils import get_all_h_param_comb, read_data, split_data, preprocess_data, predict_and_eval, hparams_tune, get_hyperparam_comb
 import os
 
 def test_hparam_combinations():
     p_comb = hparams()
 
-    comb = get_all_h_param_comb(p_comb['gammas'], p_comb['cparams']) 
+    comb = get_all_h_param_comb(p_comb['gamma'], p_comb['C']) 
 
     expected_p1 = (0.1, 1)
 
-    assert len(comb) == len(p_comb['gammas']) * len(p_comb['cparams'])
+    assert len(comb) == len(p_comb['gamma']) * len(p_comb['C'])
     
     assert expected_p1 in comb 
 
@@ -27,8 +27,8 @@ def hparams():
     cparams = [1, 10, 100]
 
     p_comb = {
-        'gammas' : gammas,
-        'cparams' : cparams
+        'gamma' : gammas,
+        'C' : cparams
     }
 
     return p_comb
@@ -59,9 +59,15 @@ def get_preprocessed_data(test_size = 0.1, dev_size = 0.7, train_test_split = Fa
 # Test save for model saving
 def test_model_saving():
     X_train, X_dev, y_train, y_dev = get_preprocessed_data()
-    p_comb = hparams()
+    gammas = [0.1, 0.1, 0.005, 0.123, 0.879, 0.009]
+    cparams = [1, 10, 100]
 
-    _, cur_model_path, _ = hparams_tune(X_train, X_dev, y_train, y_dev, p_comb, model_type="svm")
+    p_comb_svm = {
+        'gamma' : gammas,
+        'C' : cparams
+    }
+
+    _, cur_model_path, _ = hparams_tune(X_train, X_dev, y_train, y_dev, get_hyperparam_comb(p_comb_svm), model_type="svm")
 
     assert os.path.exists(cur_model_path)
 
