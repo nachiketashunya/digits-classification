@@ -24,52 +24,53 @@ import argparse
 
 # Take values from CLI
 # Create ArgumentParser object
-parser = argparse.ArgumentParser(description='Description of your program')
+# parser = argparse.ArgumentParser(description='Description of your program')
 
-# Add arguments
-parser.add_argument('--num_runs', type=float, help='Nums of runs for model training', default=5)
-parser.add_argument('--test_size', type=float, help='Value for test size', default=0.2)
-parser.add_argument('--dev_size', type=float, help='Value for dev size', default=0.2)
-parser.add_argument('--model_type', choices=['svm', 'dtree'], type=str, help='Type of the model', default='svm')
+# # Add arguments
+# parser.add_argument('--num_runs', type=float, help='Nums of runs for model training', default=5)
+# parser.add_argument('--test_size', type=float, help='Value for test size', default=0.2)
+# parser.add_argument('--dev_size', type=float, help='Value for dev size', default=0.2)
+# parser.add_argument('--model_type', choices=['svm', 'dtree'], type=str, help='Type of the model', default='svm')
 
-# Parse the command-line arguments
-args = parser.parse_args()
+# # Parse the command-line arguments
+# args = parser.parse_args()
 
-# Access the values of the arguments
-num_runs = args.num_runs
-test_size = args.test_size
-dev_size = args.dev_size
-model_type = args.model_type
+# # Access the values of the arguments
+# num_runs = args.num_runs
+# test_size = args.test_size
+# dev_size = args.dev_size
+# model_type = args.model_type
 
-print(num_runs, test_size, dev_size, model_type)
 
 # Load the data
 # 1
 X, y = read_data()
 
-
+num_runs = 5
+test_size = 0.2
+dev_size = 0.2
 # Hyperparameters Combination
 # 2.1 SVM
-if model_type == 'svm': 
-    classifier_param_dict = {}
-    gammas = [0.0001, 0.001, 0.0005, 0.123, 0.1, 1]
-    cparams = [1, 10, 100, 1000]
+ 
+classifier_param_dict = {}
+gammas = [0.0001, 0.001, 0.0005, 0.123, 0.1, 1]
+cparams = [1, 10, 100, 1000]
 
-    p_comb_svm = {
-        'gamma' : gammas,
-        'C' : cparams
-    }
+p_comb_svm = {
+    'gamma' : gammas,
+    'C' : cparams
+}
 
-    classifier_param_dict['svm'] = get_hyperparam_comb(p_comb_svm)
+classifier_param_dict['svm'] = get_hyperparam_comb(p_comb_svm)
 
 # 2.2 Decision Tree
-if model_type == 'dtree':
-    max_depth_list = [5, 10, 15, 20, 50, 100]
-    p_comb_tree = {
-        'max_depth': max_depth_list
-    }
 
-    classifier_param_dict['tree'] = get_hyperparam_comb(p_comb_tree)
+max_depth_list = [5, 10, 15, 20, 50, 100]
+p_comb_tree = {
+    'max_depth': max_depth_list
+}
+
+classifier_param_dict['tree'] = get_hyperparam_comb(p_comb_tree)
 
 
 results = []
