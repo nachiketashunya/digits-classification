@@ -4,4 +4,6 @@ COPY . /digits/
 # RUN apt-get install -y python3 python3-pip
 RUN pip3 install -r /digits/requirements.txt 
 WORKDIR /digits 
-CMD ["pytest"]
+CMD ["python", "exp.py"]
+
+
