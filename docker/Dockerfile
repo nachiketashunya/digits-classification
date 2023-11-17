@@ -1,18 +1,22 @@
 FROM python:3.10.13
-COPY . /digits/ 
-# RUN apt-get update 
-# RUN apt-get install -y python3 python3-pip
-RUN pip3 install -r /digits/requirements.txt 
-WORKDIR /digits 
-# CMD ["python", "exp.py"]
-# export FLASK_APP=ff
-# flask run 
+
+# Set the working directory
+WORKDIR /digits
+
+# Copy the requirements file from the root directory
+COPY requirements.txt /digits/
+
+# Install dependencies
+RUN pip3 install -r requirements.txt
+
+# Copy the application code
+COPY . /digits/
 
 # Set the FLASK_APP environment variable
-ENV FLASK_APP=api/ff
+ENV FLASK_APP=api/pred_url
 
-# Expose the Flask app's port (assuming it's 5000, you can change it if your app uses a different port)
-# EXPOSE 5000
+# Expose the Flask app's port
+EXPOSE 80
 
 # Start the Flask app when the container starts
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=80"]

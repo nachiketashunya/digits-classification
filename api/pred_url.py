@@ -17,6 +17,11 @@ app = Flask(__name__)
 
 model = load('./models/svm_gamma:0.001_C:1.joblib')
 
+
+@app.route("/hello/<val>")
+def hello_world(val):
+    return "<p>Hello, World!</p>" + val 
+
 @app.route('/predict', methods=['POST'])
 def compare_digits():
     try:
