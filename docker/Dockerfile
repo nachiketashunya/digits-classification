@@ -16,7 +16,7 @@ COPY . /digits/
 ENV FLASK_APP=api/pred_url
 
 # Expose the Flask app's port
-EXPOSE 8080
+EXPOSE 80
 
 # Start the Flask app when the container starts
-CMD ["flask", "run", "--host=0.0.0.0", "--port=8080"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=80"]
