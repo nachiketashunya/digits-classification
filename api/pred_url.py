@@ -9,7 +9,7 @@ import numpy as np
 # import skimage
 # from skimage.transform import resize
 import pandas as pd
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from PIL import Image
 import numpy as np
 from flask_cors import CORS 
@@ -20,7 +20,7 @@ model = load('./models/svm_gamma:0.001_C:1.joblib')
 
 @app.route("/")
 def hello_world():
-    return "<p>Hello, World!</p>"
+    return render_template("welcome.html")
 
 @app.route('/digitpredict', methods=['POST'])
 def compare_digits():
