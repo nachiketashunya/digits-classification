@@ -12,9 +12,10 @@ import pandas as pd
 from flask import Flask, request, jsonify
 from PIL import Image
 import numpy as np
+from flask_cors import CORS 
 
 app = Flask(__name__)
-
+CORS(app)
 model = load('./models/svm_gamma:0.001_C:1.joblib')
 
 @app.route("/")
@@ -48,7 +49,42 @@ def predict_digit(image):
         return digit
     except Exception as e:
         return str(e)
+    
+@app.route('/imagepredict', methods=['POST'])
+def image_prediction():
+    try:
+        # Get the two image files from the request
+        image1 = request.files['image1']
+        image2 = request.files['image2']
 
+        # Preprocess the images and make predictions
+        digit1 = predict_image(image1)
+        digit2 = predict_image(image2)
+
+        # Compare the predicted digits and return the result
+        result = {"label1": digit1, "label2": digit2}
+
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"label1": "Error", "label2": "Error"})
+
+    
+def predict_image(image):
+    try:
+        # Preprocess the image as needed for your model
+        # For example, you can use a library like PIL to resize the image
+        # and convert it to grayscale before making predictions
+        from PIL import Image
+        img = Image.open(image).convert('L').resize((8, 8))  # Example resizing to 28x28 pixels
+        img_array = np.array(img, dtype=np.float32).reshape(1, -1)
+
+        # Make predictions using your model
+        prediction = model.predict(img_array)
+        digit = int(prediction[0])
+
+        return digit
+    except Exception as e:
+        return str(e)
 
 if __name__ == '__main__':
     app.run()
