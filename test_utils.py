@@ -59,15 +59,12 @@ def get_preprocessed_data(test_size = 0.1, dev_size = 0.7, train_test_split = Fa
 # Test save for model saving
 def test_model_saving():
     X_train, X_dev, y_train, y_dev = get_preprocessed_data()
-    gammas = [0.1, 0.1, 0.005, 0.123, 0.879, 0.009]
-    cparams = [1, 10, 100]
 
-    p_comb_svm = {
-        'gamma' : gammas,
-        'C' : cparams
-    }
+    p_comb = [{
+        'solver' : 'newton-cg'
+    }]
 
-    _, cur_model_path, _ = hparams_tune(X_train, X_dev, y_train, y_dev, get_hyperparam_comb(p_comb_svm), model_type="svm")
+    _, cur_model_path, _ = hparams_tune(X_train, X_dev, y_train, y_dev, p_comb, model_type="logistic")
 
     assert os.path.exists(cur_model_path)
 
