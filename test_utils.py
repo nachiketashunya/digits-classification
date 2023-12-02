@@ -1,5 +1,7 @@
 from utils import get_all_h_param_comb, read_data, split_data, preprocess_data, predict_and_eval, hparams_tune, get_hyperparam_comb
 import os
+from joblib import load 
+from sklearn.linear_model import LogisticRegression
 
 def test_hparam_combinations():
     p_comb = hparams()
@@ -67,4 +69,21 @@ def test_model_saving():
     _, cur_model_path, _ = hparams_tune(X_train, X_dev, y_train, y_dev, p_comb, model_type="logistic")
 
     assert os.path.exists(cur_model_path)
+
+def test_model_loading():
+    lrmodel = load('./models/M23CSA016__lr_lbfgs.joblib')
+
+    # Check if the model is not None
+    assert lrmodel is not None, "Model not loaded properly."
+
+    assert isinstance(lrmodel, LogisticRegression), "Loaded model is not an instance of LogisticRegression."
+
+
+def test_check_solver():
+    lrmodel = load('./models/M23CSA016__lr_lbfgs.joblib')
+
+    model_params = lrmodel.get_params()
+
+    assert 'lbfgs' == model_params['solver'].lower()
+
 
