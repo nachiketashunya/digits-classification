@@ -71,19 +71,24 @@ def test_model_saving():
     assert os.path.exists(cur_model_path)
 
 def test_model_loading():
-    lrmodel = load('./models/M23CSA016__lr_lbfgs.joblib')
+    solvers = ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']
 
-    # Check if the model is not None
-    assert lrmodel is not None, "Model not loaded properly."
+    for solver in solvers:
+        lrmodel = load(f"./models/M23CSA016__lr_{solver}.joblib")
 
-    assert isinstance(lrmodel, LogisticRegression), "Loaded model is not an instance of LogisticRegression."
+        # Check if the model is not None
+        assert lrmodel is not None, "Model not loaded properly."
+
+        assert isinstance(lrmodel, LogisticRegression), "Loaded model is not an instance of LogisticRegression."
 
 
 def test_check_solver():
-    lrmodel = load('./models/M23CSA016__lr_lbfgs.joblib')
+    solvers = ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']
 
-    model_params = lrmodel.get_params()
+    for solver in solvers: 
+        lrmodel = load(f"./models/M23CSA016__lr_{solver}.joblib")
+        model_params = lrmodel.get_params()
 
-    assert 'lbfgs' == model_params['solver'].lower()
+        assert solver == model_params['solver'].lower()
 
 

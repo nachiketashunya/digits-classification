@@ -16,21 +16,20 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-model = load('./models/svm_gamma:0.001_C:1.joblib')
 
 @app.route("/")
 def hello_world():
     return render_template("welcome.html")
 
-@app.route('/digitpredict', methods=['POST'])
-def compare_digits():
+@app.route('/predict/<model>', methods=['POST'])
+def compare_digits(model):
     try:
         # Get the two image files from the request
         data = request.json  # Parse JSON data from the request body
         image1 = data.get('image', [])
 
         # Preprocess the images and make predictions
-        digit1 = predict_digit(image1)
+        digit1 = predict_digit(model, image1)
 
         # Compare the predicted digits and return the result
         result = digit1
@@ -39,8 +38,9 @@ def compare_digits():
     except Exception as e:
         return jsonify({"label" : "Error"})
     
-def predict_digit(image):
+def predict_digit(model_type, image):
     try:
+        model = load_model(model_type)
        # Convert the input list to a numpy array and preprocess for prediction
         img_array = np.array(image, dtype=np.float32).reshape(1, -1)
 
@@ -50,41 +50,19 @@ def predict_digit(image):
     except Exception as e:
         return str(e)
     
-@app.route('/imagepredict', methods=['POST'])
-def image_prediction():
-    try:
-        # Get the two image files from the request
-        image1 = request.files['image1']
-        image2 = request.files['image2']
+def load_model(model_type):  
+    svm = load('./models/svm_gamma:0.0001_C:1.joblib')
+    tree = load('./models/tree_max_depth:5.joblib')
+    lr = load("./models/M23CSA016__lr_newton-cg.joblib")
 
-        # Preprocess the images and make predictions
-        digit1 = predict_image(image1)
-        digit2 = predict_image(image2)
+    models = {
+        'svm' : svm,
+        'tree' : tree,
+        'lr' : lr
+    }
 
-        # Compare the predicted digits and return the result
-        result = {"label1": digit1, "label2": digit2}
+    return models[model_type]
 
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({"label1": "Error", "label2": "Error"})
-
-    
-def predict_image(image):
-    try:
-        # Preprocess the image as needed for your model
-        # For example, you can use a library like PIL to resize the image
-        # and convert it to grayscale before making predictions
-        from PIL import Image
-        img = Image.open(image).convert('L').resize((8, 8))  # Example resizing to 28x28 pixels
-        img_array = np.array(img, dtype=np.float32).reshape(1, -1)
-
-        # Make predictions using your model
-        prediction = model.predict(img_array)
-        digit = int(prediction[0])
-
-        return digit
-    except Exception as e:
-        return str(e)
 
 if __name__ == '__main__':
     app.run()

@@ -37,11 +37,6 @@ def preprocess_data(data):
     n_samples = len(data)
     data = data.reshape((n_samples, -1))
 
-    # Create a Normalizer instance
-    normalizer = Normalizer()
-
-    # Apply normalization to the data
-    data = normalizer.fit_transform(data)
 
     return data
 
@@ -102,14 +97,22 @@ def hparams_tune(X_train, X_dev, y_train, y_dev, params, model_type):
         # Predict the value of the digit on the test subset
         cur_accuracy = predict_and_eval(cur_model, X_dev, y_dev)
 
-        if cur_accuracy > best_accur_sofar:
-            best_accur_sofar = cur_accuracy
-            best_hparam = h_params  
+        if model_type == 'logistic':  
             best_model_path = "./models/{}_".format("M23CSA016") +"_lr_" + "{}".format(h_params['solver']) + ".joblib"
             best_model = cur_model
+            best_hparam = h_params  
+            best_accur_sofar = cur_accuracy
+            dump(best_model, best_model_path) 
 
-    # Save the best model
-    dump(best_model, best_model_path) 
+        else:
+            if cur_accuracy > best_accur_sofar:
+                best_accur_sofar = cur_accuracy
+                best_hparam = h_params  
+                best_model_path = "./models/{}_".format(model_type) +"_".join(["{}:{}".format(k,v) for k,v in h_params.items()]) + ".joblib"
+                best_model = cur_model
+
+            dump(best_model, best_model_path) 
+            # Save the best model
 
     return best_hparam, best_model_path, best_accur_sofar
 
