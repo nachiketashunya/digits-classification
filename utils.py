@@ -2,11 +2,13 @@
 import matplotlib.pyplot as plt
 
 # Import datasets, classifiers and performance metrics
-from sklearn import datasets, metrics, svm, tree
+from sklearn import datasets, metrics, svm, tree, linear_model
 from sklearn.model_selection import train_test_split
 import itertools
 import pdb
 from joblib import dump, load
+from sklearn.preprocessing import Normalizer
+
 
 ###############################################################################
 # Classification
@@ -35,6 +37,12 @@ def preprocess_data(data):
     n_samples = len(data)
     data = data.reshape((n_samples, -1))
 
+    # Create a Normalizer instance
+    normalizer = Normalizer()
+
+    # Apply normalization to the data
+    data = normalizer.fit_transform(data)
+
     return data
 
 def split_data(X, y, test_size, dev_size, random_state=1):
@@ -55,6 +63,9 @@ def train_model(X, y, model_params, model_type="svm"):
     
     if model_type == "tree":
         clf = tree.DecisionTreeClassifier
+
+    if model_type == "logistic":
+        clf = linear_model.LogisticRegression
     
     model = clf(**model_params) 
 
@@ -94,7 +105,7 @@ def hparams_tune(X_train, X_dev, y_train, y_dev, params, model_type):
         if cur_accuracy > best_accur_sofar:
             best_accur_sofar = cur_accuracy
             best_hparam = h_params  
-            best_model_path = "./models/{}_".format(model_type) +"_".join(["{}:{}".format(k,v) for k,v in h_params.items()]) + ".joblib"
+            best_model_path = "./models/{}_".format("M23CSA016") +"_lr_" + "{}".format(h_params['solver']) + ".joblib"
             best_model = cur_model
 
     # Save the best model

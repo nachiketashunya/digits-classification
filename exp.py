@@ -71,6 +71,7 @@ p_comb_tree = {
 
 classifier_param_dict['tree'] = get_hyperparam_comb(p_comb_tree)
 
+classifier_param_dict['logistic'] = ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']
 
 results = []
 
@@ -85,22 +86,26 @@ for run_i in range(5):
     y_dev = preprocess_data(y_dev)
 
     for model_type in classifier_param_dict:
+        if model_type != "logistic":
+            continue
+
         p_comb = classifier_param_dict[model_type]
 
-        cur_hparam, cur_model_path, cur_accur_sofar = hparams_tune(X_train, X_dev, y_train, y_dev, p_comb, model_type)
+        for solver in p_comb:
+            cur_hparam, cur_model_path, cur_accur_sofar = hparams_tune(X_train, X_dev, y_train, y_dev, [{'solver': solver}], model_type)
 
-        # Get the test accuracy 
-        cur_model = load(cur_model_path)
-        train_accuracy = predict_and_eval(cur_model, X_train, y_train)
-        test_accuracy = predict_and_eval(cur_model, X_test, y_test)
+            # Get the test accuracy 
+            cur_model = load(cur_model_path)
+            train_accuracy = predict_and_eval(cur_model, X_train, y_train)
+            test_accuracy = predict_and_eval(cur_model, X_test, y_test)
 
-        print(f"Model Type : {model_type}")
-        print(f"Train Size : {1 - (test_size+dev_size)} Test Size : {test_size} Dev Size : {dev_size}")
-        print(f"Train Accuracy : {train_accuracy:.02f} Dev Accuracy : {cur_accur_sofar:.02f} Test Accuracy : {test_accuracy:.02f}") 
-        print("\n")
+            print(f"Model Type : {model_type}")
+            print(f"Train Size : {1 - (test_size+dev_size)} Test Size : {test_size} Dev Size : {dev_size}")
+            print(f"Train Accuracy : {train_accuracy:.02f} Dev Accuracy : {cur_accur_sofar:.02f} Test Accuracy : {test_accuracy:.02f}") 
+            print("\n")
 
-        cur_run_results = {'model_type': model_type, 'run_index': run_i, 'train_acc':train_accuracy, 'test_acc': test_accuracy, 'dev_acc': cur_accur_sofar}
-        results.append(cur_run_results)
+            cur_run_results = {'model_type': model_type, 'run_index': run_i, 'train_acc':train_accuracy, 'test_acc': test_accuracy, 'dev_acc': cur_accur_sofar}
+            results.append(cur_run_results)
 
 
 print(pd.DataFrame(results).groupby('model_type').describe().T)
