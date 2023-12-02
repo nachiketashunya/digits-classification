@@ -21,5 +21,5 @@ jobs:
             username: ${{ secrets.REGISTRY_USERNAME }}
             password: ${{ secrets.REGISTRY_PASSWORD }}
         - run: |
-            docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/digitsapp:${{ github.sha }} -f docker/Dockerfile .
+            docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/digitsapp:${{ github.sha }} -f docker/Dockerfile.base .
             docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/digitsapp:${{ github.sha }}
