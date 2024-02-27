@@ -1,4 +1,4 @@
-from api.pred_url import app
+from api.app import app
 import numpy as np
 from flask import jsonify
 import json
